@@ -1,0 +1,71 @@
+<view class="container">
+
+  <view wx:if="{{loading}}" class="loading">
+    <view class="loading-text">加载中...</view>
+  </view>
+
+  <block wx:elif="{{recipe}}">
+    <image class="recipe-hero" src="{{recipe.image_url || '/images/placeholder-food.png'}}" mode="aspectFill" />
+
+    <view class="card">
+      <view class="recipe-name text-xl font-bold">{{recipe.name}}</view>
+      <view class="flex-row mt-12">
+        <view class="tag tag-green" wx:if="{{recipe.category}}">{{recipe.category}}</view>
+        <view class="tag tag-blue" wx:if="{{recipe.meal_type}}">{{recipe.meal_type}}</view>
+        <view class="tag tag-orange" wx:if="{{recipe.difficulty}}">{{recipe.difficulty}}</view>
+      </view>
+    </view>
+
+    <view class="card" wx:if="{{nutrition}}">
+      <view class="card-title">营养成分 (每份)</view>
+      <view class="nutrition-grid mt-16">
+        <view class="nutrition-item">
+          <view class="nutrition-value">{{nutrition.calories || '--'}}</view>
+          <view class="nutrition-label">热量 kcal</view>
+        </view>
+        <view class="nutrition-item">
+          <view class="nutrition-value">{{nutrition.protein_g || '--'}}g</view>
+          <view class="nutrition-label">蛋白质</view>
+        </view>
+        <view class="nutrition-item">
+          <view class="nutrition-value">{{nutrition.fat_g || '--'}}g</view>
+          <view class="nutrition-label">脂肪</view>
+        </view>
+        <view class="nutrition-item">
+          <view class="nutrition-value">{{nutrition.carbs_g || '--'}}g</view>
+          <view class="nutrition-label">碳水</view>
+        </view>
+      </view>
+    </view>
+
+    <view class="card" wx:if="{{recipe.ingredients && recipe.ingredients.length > 0}}">
+      <view class="card-title">食材清单</view>
+      <view class="divider"></view>
+      <view class="ingredient-item" wx:for="{{recipe.ingredients}}" wx:key="name" wx:for-item="ing">
+        <view class="flex-1 text-base">{{ing.name}}</view>
+        <view class="text-sm text-muted">{{ing.amount || ing.quantity || ''}}</view>
+      </view>
+    </view>
+
+    <view class="card" wx:if="{{recipe.steps && recipe.steps.length > 0}}">
+      <view class="card-title">烹饪步骤</view>
+      <view class="divider"></view>
+      <view class="step-item" wx:for="{{recipe.steps}}" wx:key="index">
+        <view class="step-number">{{index + 1}}</view>
+        <view class="flex-1 text-base">{{item}}</view>
+      </view>
+    </view>
+
+    <view class="meta-info text-sm text-muted p-24" wx:if="{{recipe.prep_time_min || recipe.cook_time_min}}">
+      <view wx:if="{{recipe.prep_time_min}}">准备时间：{{recipe.prep_time_min}} 分钟</view>
+      <view wx:if="{{recipe.cook_time_min}}">烹饪时间：{{recipe.cook_time_min}} 分钟</view>
+      <view wx:if="{{recipe.serving_size}}">份量：{{recipe.serving_size}}</view>
+    </view>
+  </block>
+
+  <view class="error-state" wx:else>
+    <view class="error-state-text">加载食谱失败</view>
+    <view class="btn btn-primary" bindtap="loadDetail">重试</view>
+  </view>
+
+</view>

@@ -1,0 +1,16 @@
+# 单容器版本 — 微信云托管 / 轻量部署
+# 去掉了 PostgreSQL + Redis，改用 SQLite + 内存缓存
+
+services:
+  app:
+    build: ./backend
+    ports:
+      - "8000:80"
+    env_file:
+      - .env
+    restart: unless-stopped
+    volumes:
+      - sqlite_data:/app
+
+volumes:
+  sqlite_data:

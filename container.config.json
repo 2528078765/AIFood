@@ -1,0 +1,27 @@
+{
+  "name": "aifood",
+  "description": "食光助手 - AI 健身饮食助手",
+  "containerPort": 80,
+  "envParams": {
+    "DEEPSEEK_API_KEY": "",
+    "DASHSCOPE_API_KEY": "",
+    "TAVILY_API_KEY": "",
+    "WECHAT_APPID": "",
+    "WECHAT_SECRET": "",
+    "JWT_SECRET": "",
+    "ENCRYPTION_KEY": "",
+    "DATABASE_URL": "sqlite+aiosqlite:///./aifood.db"
+  },
+  "cpu": 1,
+  "mem": 1,
+  "minNum": 0,
+  "maxNum": 1,
+  "policyType": "cpu",
+  "policyThreshold": 60,
+  "customLogs": "stdout",
+  "initialDelaySeconds": 2,
+  "port": 80,
+  "hasDockerfile": true,
+  "dockerfilePath": "backend/Dockerfile",
+  "buildDir": "backend"
+}

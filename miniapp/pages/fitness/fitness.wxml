@@ -1,0 +1,192 @@
+<view class="container">
+
+  <!-- ══════════════════════════════════════════
+       Stats Card
+       ══════════════════════════════════════════ -->
+  <view class="card">
+    <view class="card-header">
+      <view class="card-title">健身统计</view>
+      <view class="text-sm text-primary" bindtap="switchPeriod">
+        {{period === 'week' ? '周统计' : '月统计'}}
+      </view>
+    </view>
+    <view class="stats-grid">
+      <view class="stat-item">
+        <view class="text-3xl font-bold text-primary">{{stats.total_days || 0}}</view>
+        <view class="text-sm text-muted">运动天数</view>
+      </view>
+      <view class="stat-item">
+        <view class="text-3xl font-bold text-primary">{{stats.total_minutes || 0}}</view>
+        <view class="text-sm text-muted">运动分钟</view>
+      </view>
+      <view class="stat-item">
+        <view class="text-3xl font-bold text-primary">{{streakDays}}</view>
+        <view class="text-sm text-muted">连续天数</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- ══════════════════════════════════════════
+       Exercise Distribution
+       ══════════════════════════════════════════ -->
+  <view class="card" wx:if="{{stats.exercises && Object.keys(stats.exercises).length > 0}}">
+    <view class="card-title">运动分布</view>
+    <view class="divider"></view>
+    <view class="exercise-bar" wx:for="{{stats.exercises}}" wx:for-item="count" wx:for-index="type" wx:key="type">
+      <text class="flex-1 text-base">{{type === 'running' ? '跑步' : type === 'swimming' ? '游泳' : type === 'weightlifting' ? '力量训练' : type === 'yoga' ? '瑜伽' : type === 'cycling' ? '骑行' : type === 'hiit' ? 'HIIT' : type}}</text>
+      <text class="text-sm text-muted">{{count}} 次</text>
+    </view>
+  </view>
+
+  <!-- ══════════════════════════════════════════
+       Calendar Card
+       ══════════════════════════════════════════ -->
+  <view class="card calendar-card">
+    <!-- Month Header -->
+    <view class="calendar-header">
+      <view class="calendar-arrow" bindtap="prevMonth">◀</view>
+      <view class="calendar-month-title">{{currentYear}}年 {{currentMonth}}月</view>
+      <view class="calendar-arrow {{isCurrentMonth ? 'arrow-disabled' : ''}}" bindtap="nextMonth">▶</view>
+    </view>
+
+    <!-- Weekday Row -->
+    <view class="calendar-weekdays">
+      <view class="weekday-cell" wx:for="{{weekdays}}" wx:key="*this">{{item}}</view>
+    </view>
+
+    <!-- Day Grid -->
+    <view class="calendar-grid">
+      <view
+        wx:for="{{calendarDays}}"
+        wx:key="index"
+        class="day-cell {{item.isEmpty ? 'day-empty' : ''}} {{item.isToday ? 'day-today' : ''}} {{item.isChecked ? 'day-checked' : ''}} {{item.isFuture ? 'day-future' : ''}} {{item.isPastNoCheckin ? 'day-past-tappable' : ''}} {{item.isSelected ? 'day-selected' : ''}}"
+        data-date="{{item.date}}"
+        data-future="{{item.isFuture}}"
+        bindtap="onDayTap"
+      >
+        <view class="day-num" wx:if="{{!item.isEmpty}}">{{item.day}}</view>
+        <view class="day-dot" wx:if="{{item.isChecked && !item.isEmpty}}"></view>
+      </view>
+    </view>
+
+    <!-- Month Stats Row -->
+    <view class="calendar-stats-row">
+      <text>本月打卡 <text class="stats-highlight">{{monthCheckinDays}}</text> 天</text>
+      <text class="stats-separator">|</text>
+      <text>总时长 <text class="stats-highlight">{{monthTotalMinutes}}</text> 分钟</text>
+    </view>
+  </view>
+
+  <!-- ══════════════════════════════════════════
+       Checkin Form Card
+       ══════════════════════════════════════════ -->
+  <view class="card">
+    <view class="card-title">健身打卡</view>
+    <view class="divider"></view>
+
+    <!-- Selected Date Indicator -->
+    <view class="selected-date-row">
+      <text class="selected-date-label">打卡日期：</text>
+      <text class="selected-date-value {{isBackfill ? 'backfill' : ''}}">{{selectedDateLabel}}</text>
+    </view>
+
+    <!-- ── Exercise Type Grid ── -->
+    <view class="form-group">
+      <view class="form-label">运动类型</view>
+      <view class="category-grid">
+        <view
+          wx:for="{{exerciseCategories}}"
+          wx:key="key"
+          class="category-cell {{selectedCategory === item.key ? 'category-active' : ''}}"
+          data-key="{{item.key}}"
+          bindtap="onCategoryTap"
+        >
+          <view class="category-text">{{item.label}}</view>
+        </view>
+      </view>
+    </view>
+
+    <!-- ═══════════════════════════════════
+         BASIC MODE
+         ═══════════════════════════════════ -->
+    <block wx:if="{{!detailedMode}}">
+      <view class="form-group">
+        <view class="form-label">时长 (分钟)</view>
+        <input class="form-input" type="digit" value="{{duration}}" placeholder="例如：30" bindinput="onDurationInput" />
+      </view>
+
+      <view class="form-group">
+        <view class="form-label">备注</view>
+        <textarea class="form-textarea" value="{{notes}}" placeholder="记录一下..." bindinput="onNotesInput" />
+      </view>
+    </block>
+
+    <!-- ═══════════════════════════════════
+         DETAILED MODE — Free-form exercises
+         ═══════════════════════════════════ -->
+    <block wx:if="{{detailedMode}}">
+      <view class="divider"></view>
+      <view class="form-group">
+        <view class="form-label">时长 (分钟)</view>
+        <input class="form-input" type="digit" value="{{duration}}" placeholder="例如：30" bindinput="onDurationInput" />
+      </view>
+
+      <view class="form-label mb-16">训练项目 <text class="text-xs text-muted">（可选）</text></view>
+
+      <view wx:for="{{exercises}}" wx:key="index" class="detail-exercise-card">
+        <view class="detail-row-header">
+          <text class="detail-ex-index">#{{index + 1}}</text>
+          <text class="detail-ex-remove" data-index="{{index}}" bindtap="removeExercise">删除</text>
+        </view>
+
+        <view class="detail-field">
+          <view class="detail-field-label">训练项目</view>
+          <input class="detail-input" placeholder="例如：杠铃卧推" value="{{item.name}}" data-index="{{index}}" bindinput="onExNameInput" />
+        </view>
+
+        <view class="detail-fields">
+          <view class="detail-field">
+            <view class="detail-field-label">组数</view>
+            <input class="detail-input" type="number" placeholder="3" value="{{item.sets}}" data-index="{{index}}" bindinput="onExSetsInput" />
+          </view>
+          <view class="detail-field">
+            <view class="detail-field-label">次数</view>
+            <input class="detail-input" type="number" placeholder="10" value="{{item.reps}}" data-index="{{index}}" bindinput="onExRepsInput" />
+          </view>
+          <view class="detail-field">
+            <view class="detail-field-label">重量(kg)</view>
+            <input class="detail-input" type="digit" placeholder="20" value="{{item.weight}}" data-index="{{index}}" bindinput="onExWeightInput" />
+          </view>
+        </view>
+
+        <view class="detail-field">
+          <view class="detail-field-label">时长 (分钟)</view>
+          <input class="detail-input" type="digit" placeholder="例如：30" value="{{item.duration}}" data-index="{{index}}" bindinput="onExDurationInput" />
+        </view>
+      </view>
+
+      <view class="btn btn-outline btn-sm mt-12" bindtap="addExercise">+ 添加一组</view>
+      <view class="text-xs text-muted mt-8" wx:if="{{exercises.length === 0}}">开启详细记录后，点击"添加一组"开始填写</view>
+    </block>
+
+    <!-- ── Calories Display ── -->
+    <view class="calories-display" wx:if="{{caloriesBurned > 0}}">
+      <view class="calories-label">预估消耗</view>
+      <view class="calories-value">{{caloriesBurned}} <text class="calories-unit">kcal</text></view>
+      <view class="calories-detail">体重 {{userWeight}}kg · MET · {{totalDuration}}分钟</view>
+    </view>
+
+    <!-- ── Submit Button ── -->
+    <view class="btn btn-primary btn-block {{submitting ? 'btn-disabled' : ''}} mt-24" bindtap="submitCheckin">
+      {{submitting ? '提交中...' : (isBackfill ? '补卡' : '打卡')}}
+    </view>
+  </view>
+
+  <!-- ══════════════════════════════════════════
+       Navigation to Logs
+       ══════════════════════════════════════════ -->
+  <view class="mt-16 mb-24 text-center">
+    <view class="btn btn-outline" bindtap="goLogs">查看打卡记录</view>
+  </view>
+
+</view>

@@ -1,0 +1,34 @@
+.camera-page { min-height: 100vh; padding: 24rpx; background: var(--bg); }
+
+.preview-area { display: flex; flex-direction: column; align-items: center; }
+.preview-image {
+  width: 100%; height: 520rpx; border-radius: var(--radius-lg);
+  background: #1a1a1a;
+}
+.preview-actions {
+  display: flex; flex-direction: row; margin-top: 24rpx; gap: 16rpx;
+}
+
+.camera-placeholder {
+  display: flex; flex-direction: column; align-items: center;
+  justify-content: center; padding: 120rpx 48rpx 80rpx;
+  background: #fff; border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-sm);
+}
+.camera-placeholder-icon {
+  width: 140rpx; height: 140rpx; border-radius: 50%;
+  background: linear-gradient(135deg, #E8F8EF, #D4EFDF);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 64rpx;
+}
+.camera-placeholder-title {
+  font-size: 34rpx; font-weight: 700; color: var(--text); margin-top: 28rpx;
+}
+.camera-placeholder-sub {
+  font-size: 26rpx; color: var(--text-muted); margin-top: 8rpx;
+  text-align: center; line-height: 1.5;
+}
+.camera-actions { width: 100%; margin-top: 40rpx; }
+
+.result-card { margin-top: 24rpx; }
+.result-content { font-size: 28rpx; line-height: 1.7; color: var(--text-secondary); }

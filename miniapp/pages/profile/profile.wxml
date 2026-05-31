@@ -1,0 +1,128 @@
+<view class="container">
+
+  <!-- Profile Header -->
+  <view class="profile-hero">
+    <view class="profile-hero-bg"></view>
+    <view class="profile-hero-content">
+      <image class="profile-avatar" src="{{userInfo.avatar_url || defaultAvatar}}" mode="aspectFill" />
+      <view class="flex-1" style="margin-left:20rpx">
+        <view class="profile-name">{{displayName}}</view>
+        <view class="profile-goal" wx:if="{{userInfo.id && userInfo.fitness_goal}}">
+          {{userInfo.fitness_goal === 'lose_fat' ? '减脂中' : userInfo.fitness_goal === 'build_muscle' ? '增肌中' : '维持健康'}}
+        </view>
+        <view class="profile-goal" wx:elif="{{!userInfo.id}}">登录后享受专属服务</view>
+      </view>
+    </view>
+    <!-- Stats -->
+    <view class="profile-hero-stats" wx:if="{{userInfo.id && (userInfo.height_cm || userInfo.weight_kg || userInfo.daily_calorie_target)}}">
+      <view class="phs-item" wx:if="{{userInfo.height_cm}}">
+        <view class="phs-val">{{userInfo.height_cm}}</view>
+        <view class="phs-lbl">身高 cm</view>
+      </view>
+      <view class="phs-item" wx:if="{{userInfo.weight_kg}}">
+        <view class="phs-val">{{userInfo.weight_kg}}</view>
+        <view class="phs-lbl">体重 kg</view>
+      </view>
+      <view class="phs-item" wx:if="{{userInfo.daily_calorie_target}}">
+        <view class="phs-val phs-val-accent">{{userInfo.daily_calorie_target}}</view>
+        <view class="phs-lbl">每日目标 kcal</view>
+      </view>
+      <view class="phs-item">
+        <view class="phs-val">{{bodyFatHasData ? (bodyFatPct != null ? bodyFatPct + '%' : '--') : '--'}}
+          <text class="phs-info-icon" bindtap="onBodyFatInfo" wx:if="{{bodyFatHasData}}">ⓘ</text>
+        </view>
+        <view class="phs-lbl">体脂率</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- Body Data (View Mode) -->
+  <view class="card" wx:if="{{!editMode && userInfo.id}}">
+    <view class="card-header">
+      <view class="card-title card-title-accent">身体数据</view>
+      <view class="text-sm text-primary" bindtap="toggleEdit">编辑</view>
+    </view>
+    <view class="info-row"><view class="info-label">性别</view><view class="info-value">{{userInfo.gender === 'male' ? '男' : userInfo.gender === 'female' ? '女' : '未设置'}}</view></view>
+    <view class="info-row"><view class="info-label">出生日期</view><view class="info-value">{{userInfo.birthday || '未设置'}}</view></view>
+    <view class="info-row"><view class="info-label">健身目标</view><view class="info-value">{{userInfo.fitness_goal === 'lose_fat' ? '减脂' : userInfo.fitness_goal === 'build_muscle' ? '增肌' : userInfo.fitness_goal === 'maintain' ? '维持' : '未设置'}}</view></view>
+    <view class="info-row"><view class="info-label">过敏原</view><view class="info-value">{{userInfo.allergies && userInfo.allergies.length > 0 ? userInfo.allergies_display : '无'}}</view></view>
+    <view class="info-row"><view class="info-label">饮食限制</view><view class="info-value">{{userInfo.dietary_restrictions_display || '无'}}</view></view>
+    <view class="info-row" wx:if="{{userInfo.exercise_details}}"><view class="info-label">运动详情</view><view class="info-value">{{userInfo.exercise_details}}</view></view>
+  </view>
+
+  <!-- Edit Mode -->
+  <view class="card" wx:if="{{editMode}}">
+    <view class="card-header">
+      <view class="card-title card-title-accent">编辑资料</view>
+      <view class="text-sm text-primary" bindtap="saveProfile">保存</view>
+    </view>
+    <view class="form-group" style="margin-bottom:40rpx">
+      <view class="form-label">头像</view>
+      <button class="edit-avatar-btn" open-type="chooseAvatar" bindchooseavatar="onChooseAvatar">
+        <image class="edit-avatar-img" src="{{editAvatarUrl || userInfo.avatar_url || defaultAvatar}}" mode="aspectFill" />
+        <text class="edit-avatar-text">点击更换</text>
+      </button>
+    </view>
+    <view class="form-group">
+      <view class="form-label">昵称</view>
+      <input class="form-input" type="nickname" value="{{editNickname || userInfo.nickname || ''}}" placeholder="输入昵称" bindinput="onEditNickname" />
+    </view>
+    <view class="form-group">
+      <view class="form-label">性别</view>
+      <picker mode="selector" range="{{genderOptions}}" value="{{editForm.genderIndex}}" bindchange="onGenderChange">
+        <view class="form-input flex-row flex-between">{{genderOptions[editForm.genderIndex]}}<text class="text-muted">▼</text></view>
+      </picker>
+    </view>
+    <view class="form-group">
+      <view class="form-label">出生日期</view>
+      <picker mode="date" value="{{editForm.birthday}}" bindchange="onBirthdayChange">
+        <view class="form-input">{{editForm.birthday || '请选择'}}</view>
+      </picker>
+    </view>
+    <view class="form-group">
+      <view class="form-label">身高 (cm)</view>
+      <input class="form-input" type="digit" value="{{editForm.height_cm}}" placeholder="例如：170" bindinput="onFieldChange" data-field="height_cm" />
+    </view>
+    <view class="form-group">
+      <view class="form-label">体重 (kg)</view>
+      <input class="form-input" type="digit" value="{{editForm.weight_kg}}" placeholder="例如：65" bindinput="onFieldChange" data-field="weight_kg" />
+    </view>
+    <view class="form-group">
+      <view class="form-label">运动详情</view>
+      <textarea class="form-textarea" value="{{editForm.exercise_details}}" placeholder="例如：卧推极限90kg，深蹲极限100kg&#10;帮助估算体脂率，让食谱推荐更精准" bindinput="onExerciseDetailInput" maxlength="1024" auto-height />
+    </view>
+    <view class="form-group">
+      <view class="form-label">健身目标</view>
+      <picker mode="selector" range="{{goalOptions}}" value="{{editForm.goalIndex}}" bindchange="onGoalChange">
+        <view class="form-input flex-row flex-between">{{goalOptions[editForm.goalIndex]}}<text class="text-muted">▼</text></view>
+      </picker>
+    </view>
+    <view class="form-group">
+      <view class="form-label">过敏原</view>
+      <view class="tag-group">
+        <text class="profile-tag {{item.selected ? 'tag-active' : ''}}" wx:for="{{allergyTags}}" wx:key="name" data-name="{{item.name}}" bindtap="onAllergyToggle">{{item.name}}</text>
+      </view>
+    </view>
+    <view class="form-group">
+      <view class="form-label">饮食限制</view>
+      <view class="tag-group">
+        <text class="profile-tag {{item.selected ? 'tag-active' : ''}}" wx:for="{{restrictionTags}}" wx:key="key" data-key="{{item.key}}" bindtap="onRestrictionToggle">{{item.label}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- Settings Entry -->
+  <view class="card" wx:if="{{userInfo.id}}">
+    <view class="list-item list-item-arrow" bindtap="goSettings">
+      <view>API 密钥设置</view>
+      <view class="text-sm text-muted">{{apiKeyStatus || '未检查'}}</view>
+    </view>
+  </view>
+
+  <!-- Logout / Login -->
+  <view class="mt-32 mb-32 px-24">
+    <view wx:if="{{userInfo.id}}" class="btn btn-outline btn-block" bindtap="doLogout">退出登录</view>
+    <view wx:else class="btn btn-primary btn-block" bindtap="doLogin">微信一键登录</view>
+  </view>
+
+</view>

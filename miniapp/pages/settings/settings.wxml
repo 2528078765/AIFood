@@ -1,0 +1,120 @@
+<view class="container">
+
+  <!-- Token Balance Banner -->
+  <view class="token-banner {{token.has_personal_keys ? 'token-personal' : (token.free_tokens_remaining > 0 ? 'token-active' : 'token-empty')}}">
+    <view class="token-banner-icon">{{token.has_personal_keys ? '🔑' : (token.free_tokens_remaining > 0 ? '🎁' : '⚠️')}}</view>
+    <view class="flex-1 ml-12">
+      <view class="token-title" wx:if="{{token.has_personal_keys}}">正在使用自有 API Key</view>
+      <view class="token-title" wx:elif="{{token.free_tokens_remaining > 0}}">剩余免费 Token</view>
+      <view class="token-title" wx:else>免费 Token 已用完</view>
+      <view class="token-desc" wx:if="{{!token.has_personal_keys}}">
+        <text wx:if="{{token.free_tokens_remaining > 0}}">配置自有 Key 后不再消耗免费额度</text>
+        <text wx:else>请配置您自己的 API 密钥以继续使用 AI 功能</text>
+      </view>
+    </view>
+    <!-- Progress Bar -->
+    <view class="token-progress-wrap" wx:if="{{!token.has_personal_keys}}">
+      <view class="token-progress-bar">
+        <view class="token-progress-fill" style="width:{{token.free_tokens_total > 0 ? (token.free_tokens_remaining / token.free_tokens_total * 100) : 0}}%"></view>
+      </view>
+      <view class="token-progress-text">
+        <text class="token-progress-left">{{tokenRemainingDisplay}}</text>
+        <text class="token-progress-right">共 {{tokenTotalDisplay}} 万</text>
+      </view>
+    </view>
+    <view class="token-progress-wrap" wx:else>
+      <view class="text-sm text-muted">自有密钥已生效，不消耗免费 Token</view>
+    </view>
+  </view>
+
+  <!-- How-to Tutorial Card -->
+  <view class="card tutorial-card">
+    <view class="card-header" bindtap="toggleTutorial">
+      <view class="card-title card-title-accent">如何获取 API 密钥？</view>
+      <view class="text-sm text-muted">{{showTutorial ? '收起 ▲' : '展开 ▼'}}</view>
+    </view>
+    <view wx:if="{{showTutorial}}">
+      <view class="divider"></view>
+      <view class="tutorial-step">
+        <view class="tutorial-num">1</view>
+        <view class="tutorial-body">
+          <view class="tutorial-step-title">选择 AI 提供商并注册账号</view>
+          <view class="tutorial-step-desc">点击下方「获取密钥」链接前往对应网站注册</view>
+        </view>
+      </view>
+      <view class="tutorial-step">
+        <view class="tutorial-num">2</view>
+        <view class="tutorial-body">
+          <view class="tutorial-step-title">创建 API Key</view>
+          <view class="tutorial-step-desc">在控制台找到 API Keys 页面，点击创建，复制生成的密钥</view>
+        </view>
+      </view>
+      <view class="tutorial-step">
+        <view class="tutorial-num">3</view>
+        <view class="tutorial-body">
+          <view class="tutorial-step-title">粘贴到下方并保存</view>
+          <view class="tutorial-step-desc">选择对应提供商，粘贴密钥，保存后即可继续使用</view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- Provider Cards -->
+  <view class="card" wx:for="{{providers}}" wx:key="provider">
+    <view class="provider-header flex-between">
+      <view class="provider-name">
+        {{item.name}}
+        <text class="tag tag-sm {{item.provider === 'deepseek' ? 'tag-green' : item.provider === 'qwen' ? 'tag-blue' : 'tag-orange'}} ml-8">{{item.provider === 'deepseek' ? '必配' : item.provider === 'qwen' ? '推荐' : '可选'}}</text>
+      </view>
+      <view class="text-sm {{keys && keys[item.provider] && keys[item.provider].configured ? 'text-primary' : 'text-muted'}}">
+        {{keys && keys[item.provider] && keys[item.provider].configured ? '√ 已配置' : '未配置'}}
+      </view>
+    </view>
+    <view class="provider-desc">{{item.description}}</view>
+    <view class="provider-meta">
+      <view class="provider-price">{{item.price}}</view>
+    </view>
+
+    <!-- Input area -->
+    <view class="provider-input-area">
+      <view class="form-group">
+        <view class="form-label">API Key</view>
+        <view class="input-row">
+          <input class="form-input key-input" value="{{formData[item.provider + '_api_key'] || ''}}" placeholder="粘贴你的 API Key..." password="{{!showKey[item.provider]}}" bindinput="onKeyInput" data-provider="{{item.provider}}" />
+          <view class="input-suffix" bindtap="toggleKeyVis" data-provider="{{item.provider}}">{{showKey[item.provider] ? '🙈' : '👁'}}</view>
+        </view>
+        <view class="text-xs text-muted mt-6" wx:if="{{keys && keys[item.provider] && keys[item.provider].key_preview}}">
+          当前：{{keys[item.provider].key_preview}}
+        </view>
+      </view>
+
+      <!-- Base URL (only for LLM providers) -->
+      <view class="form-group" wx:if="{{item.provider !== 'tavily'}}">
+        <view class="form-label">API 地址 <text class="text-xs text-muted">（可选，使用默认即可）</text></view>
+        <input class="form-input" value="{{formData[item.provider + '_base_url'] || ''}}" placeholder="{{item.provider === 'deepseek' ? 'https://api.deepseek.com' : 'https://dashscope.aliyuncs.com/compatible-mode/v1'}}" bindinput="onBaseUrlInput" data-provider="{{item.provider}}" />
+      </view>
+
+      <view class="provider-actions">
+        <view class="btn btn-sm" style="background:#f5f5f5;color:#666;border-radius:100rpx;padding:10rpx 24rpx;font-size:22rpx;" bindtap="openUrl" data-url="{{item.api_key_url}}">获取密钥 ›</view>
+        <view class="btn btn-sm" style="background:#f5f5f5;color:#666;border-radius:100rpx;padding:10rpx 24rpx;font-size:22rpx;" bindtap="testConnection" data-provider="{{item.provider}}">{{testingProvider === item.provider ? '测试中...' : '测试连接'}}</view>
+        <view class="btn btn-sm" style="background:#fde8e8;color:#fa5151;border-radius:100rpx;padding:10rpx 24rpx;font-size:22rpx;" wx:if="{{keys && keys[item.provider] && keys[item.provider].configured}}" bindtap="deleteKey" data-provider="{{item.provider}}">删除</view>
+      </view>
+
+      <view class="test-result {{testResults[item.provider] && testResults[item.provider].connected ? 'success' : 'error'}}" wx:if="{{testResults[item.provider]}}">
+        {{testResults[item.provider].connected ? '✓ 连接成功' : '✗ ' + (testResults[item.provider].error || '连接失败')}}
+      </view>
+    </view>
+  </view>
+
+  <!-- Save All Button -->
+  <view class="mt-20 mb-32">
+    <view class="btn btn-primary btn-block {{saving ? 'btn-disabled' : ''}}" bindtap="saveAllKeys">
+      {{saving ? '保存中...' : '保存所有配置'}}
+    </view>
+  </view>
+
+  <view class="text-sm text-muted text-center mb-32">
+    密钥通过 AES-256 加密存储在服务器，只有您自己能用
+  </view>
+
+</view>

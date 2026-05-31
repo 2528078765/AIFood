@@ -1,0 +1,24 @@
+{
+  "version": "2.0",
+  "envId": "csyaifood-d0gyq6le6214959bf",
+  "functionRoot": "./functions",
+  "functions": [],
+  "framework": {
+    "name": "aifood",
+    "plugins": {
+      "container": {
+        "use": "@cloudbase/framework-plugin-container",
+        "inputs": {
+          "serviceName": "aifood",
+          "servicePath": "/",
+          "containerPort": 80,
+          "dockerfilePath": "Dockerfile",
+          "buildDir": "backend",
+          "envVariables": {
+            "DATABASE_URL": "sqlite+aiosqlite:///./aifood.db"
+          }
+        }
+      }
+    }
+  }
+}

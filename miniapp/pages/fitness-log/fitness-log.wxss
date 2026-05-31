@@ -1,0 +1,26 @@
+.date-filter {
+  display: flex; align-items: center; justify-content: center;
+  padding: 20rpx 0 24rpx; gap: 16rpx;
+}
+.date-btn {
+  padding: 14rpx 28rpx; background: #fff;
+  border-radius: 100rpx; font-size: 26rpx;
+  color: var(--text-secondary); box-shadow: var(--shadow-xs);
+}
+.date-separator { font-size: 24rpx; color: var(--text-muted); }
+
+.record-card { background: #fff; border-radius: var(--radius-lg); padding: 24rpx; margin-bottom: 16rpx; box-shadow: var(--shadow-xs); }
+.record-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14rpx; }
+.record-type { font-size: 30rpx; font-weight: 700; color: var(--text); }
+.record-date { font-size: 24rpx; color: var(--text-muted); }
+
+.stat-pills { display: flex; gap: 10rpx; margin-bottom: 12rpx; }
+.stat-pill {
+  display: flex; flex-direction: column; align-items: center;
+  padding: 10rpx 22rpx; background: var(--bg);
+  border-radius: var(--radius-sm);
+}
+.stat-pill-val { font-size: 26rpx; font-weight: 700; color: var(--primary); }
+.stat-pill-lbl { font-size: 20rpx; color: var(--text-muted); margin-top: 2rpx; }
+
+.record-notes { font-size: 24rpx; color: var(--text-secondary); font-style: italic; margin-top: 8rpx; }

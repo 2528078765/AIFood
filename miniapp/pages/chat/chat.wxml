@@ -1,0 +1,41 @@
+<view class="chat-page">
+  <scroll-view class="chat-messages" scroll-y scroll-into-view="{{scrollToView}}" scroll-with-animation>
+    <view class="empty-state" wx:if="{{messages.length === 0 && !loading}}">
+      <view class="empty-state-icon">💬</view>
+      <view class="empty-state-text">有什么可以帮您的？</view>
+      <view class="empty-state-sub">您可以询问食谱推荐、营养分析、运动建议等</view>
+    </view>
+
+    <view wx:for="{{messages}}" wx:key="index" id="msg-{{index}}">
+      <view class="message {{item.role === 'user' ? 'msg-user' : 'msg-ai'}}">
+        <view class="msg-bubble {{item.role === 'user' ? 'bubble-user' : 'bubble-ai'}}">
+          <text wx:if="{{item.role === 'user'}}">{{item.content}}</text>
+          <text wx:else>{{item.content}}</text>
+        </view>
+        <view class="msg-time text-xs text-muted" wx:if="{{item.time}}">{{item.time}}</view>
+      </view>
+    </view>
+
+    <view class="msg-typing" wx:if="{{typing}}">
+      <view class="bubble-ai typing-dots">
+        <view class="dot"></view><view class="dot"></view><view class="dot"></view>
+      </view>
+    </view>
+
+    <view id="msg-bottom"></view>
+  </scroll-view>
+
+  <view class="quick-chips" wx:if="{{messages.length === 0}}">
+    <view class="chip" bindtap="sendQuick" data-text="今天推荐吃什么？">今天推荐吃什么？</view>
+    <view class="chip" bindtap="sendQuick" data-text="帮我分析一下今天的饮食">帮我分析一下今天的饮食</view>
+    <view class="chip" bindtap="sendQuick" data-text="推荐一个减脂午餐">推荐一个减脂午餐</view>
+    <view class="chip" bindtap="sendQuick" data-text="跑步30分钟消耗多少热量？">跑步30分钟消耗多少热量？</view>
+  </view>
+
+  <view class="chat-input-bar">
+    <view class="input-wrap">
+      <input class="chat-input" value="{{inputText}}" placeholder="输入您的问题..." bindinput="onInput" bindconfirm="sendMessage" confirm-type="send" adjust-position="{{true}}" />
+      <view class="send-btn {{inputText ? 'active' : ''}}" bindtap="sendMessage">发送</view>
+    </view>
+  </view>
+</view>

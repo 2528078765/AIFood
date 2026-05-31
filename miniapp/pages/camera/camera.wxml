@@ -1,0 +1,34 @@
+<view class="camera-page">
+  <view class="preview-area" wx:if="{{imagePath}}">
+    <image class="preview-image" src="{{imagePath}}" mode="aspectFit" />
+    <view class="preview-actions">
+      <view class="btn btn-outline" bindtap="retake">重新拍照</view>
+      <view class="btn btn-primary ml-16" bindtap="analyzeFood">
+        {{analyzing ? '分析中...' : '开始分析'}}
+      </view>
+    </view>
+  </view>
+
+  <view class="camera-placeholder" wx:else>
+    <view class="camera-placeholder-icon">📷</view>
+    <view class="camera-placeholder-title">拍下您的食物</view>
+    <view class="camera-placeholder-sub">AI 将自动识别食物并分析营养</view>
+    <view class="camera-actions">
+      <view class="btn btn-primary btn-block" bindtap="takePhoto">拍照</view>
+      <view class="btn btn-outline btn-block mt-16" bindtap="choosePhoto">从相册选择</view>
+    </view>
+  </view>
+
+  <view class="result-card card" wx:if="{{result}}">
+    <view class="card-title">识别结果</view>
+    <view class="divider"></view>
+    <view class="result-content">{{result}}</view>
+    <view class="mt-16">
+      <view class="btn btn-primary btn-block" bindtap="goChat">咨询 AI 营养师</view>
+    </view>
+  </view>
+
+  <view class="loading" wx:if="{{analyzing}}">
+    <view class="loading-text">AI 分析中，请稍候...</view>
+  </view>
+</view>

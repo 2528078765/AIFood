@@ -1,0 +1,82 @@
+<view class="container">
+
+  <view class="meal-tabs">
+    <view class="meal-tab {{currentMeal === 'all' ? 'active' : ''}}" bindtap="switchMeal" data-meal="all">一日三餐</view>
+    <view class="meal-tab {{currentMeal === 'breakfast' ? 'active' : ''}}" bindtap="switchMeal" data-meal="breakfast">早餐</view>
+    <view class="meal-tab {{currentMeal === 'lunch' ? 'active' : ''}}" bindtap="switchMeal" data-meal="lunch">午餐</view>
+    <view class="meal-tab {{currentMeal === 'dinner' ? 'active' : ''}}" bindtap="switchMeal" data-meal="dinner">晚餐</view>
+  </view>
+
+  <view wx:if="{{loading}}" class="loading">
+    <view class="loading-text">正在为您推荐...</view>
+  </view>
+
+  <block wx:elif="{{currentMeal === 'all'}}">
+    <view class="meal-section" wx:for="{{dailyMeals}}" wx:key="meal_type">
+      <view class="meal-section-header">
+        <view class="meal-label">
+          <text wx:if="{{item.meal_type === 'breakfast'}}">早餐</text>
+          <text wx:elif="{{item.meal_type === 'lunch'}}">午餐</text>
+          <text wx:elif="{{item.meal_type === 'dinner'}}">晚餐</text>
+        </view>
+        <view class="text-sm text-muted">约 {{item.total_calories || '--'}} kcal</view>
+      </view>
+      <view class="recipe-list">
+        <view class="recipe-mini-card" wx:for="{{item.recipes}}" wx:for-item="recipe" wx:key="id"
+              bindtap="viewDetail" data-id="{{recipe.id}}">
+          <image class="recipe-thumb" src="{{recipe.image_url || '/images/placeholder-food.png'}}" mode="aspectFill" />
+          <view class="flex-1 ml-16">
+            <view class="text-base font-medium ellipsis">{{recipe.name}}</view>
+            <view class="text-sm text-muted mt-4">
+              {{recipe.calories || recipe.nutrition_per_serving.calories || '--'}} kcal
+              <text wx:if="{{recipe.prep_time_min}}"> · {{recipe.prep_time_min}}分钟</text>
+            </view>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <view class="empty-state" wx:if="{{dailyMeals.length === 0}}">
+      <view class="empty-state-icon">🍳</view>
+      <view class="empty-state-text">暂无食谱推荐</view>
+      <view class="empty-state-sub">完善身体数据后获取个性化推荐</view>
+    </view>
+  </block>
+
+  <block wx:else>
+    <view wx:if="{{singleMeal}}">
+      <view class="card">
+        <view class="card-header">
+          <view class="card-title">为您推荐</view>
+          <view class="text-sm text-muted">约 {{singleMeal.meal_budget || '--'}} kcal</view>
+        </view>
+      </view>
+      <view class="recipe-list">
+        <view class="recipe-mini-card" wx:for="{{singleMeal.recipes}}" wx:for-item="recipe" wx:key="id"
+              bindtap="viewDetail" data-id="{{recipe.id}}">
+          <image class="recipe-thumb" src="{{recipe.image_url || '/images/placeholder-food.png'}}" mode="aspectFill" />
+          <view class="flex-1 ml-16">
+            <view class="text-base font-medium ellipsis">{{recipe.name}}</view>
+            <view class="text-sm text-muted mt-4">
+              {{recipe.calories || recipe.nutrition_per_serving.calories || '--'}} kcal
+              <text wx:if="{{recipe.prep_time_min}}"> · {{recipe.prep_time_min}}分钟</text>
+            </view>
+          </view>
+        </view>
+      </view>
+    </view>
+    <view class="loading" wx:else>
+      <view class="loading-text">加载中...</view>
+    </view>
+  </block>
+
+  <!-- Warning message -->
+  <view class="warning-card" wx:if="{{warning}}">
+    <text>{{warning}}</text>
+  </view>
+
+  <view class="mt-24">
+    <view class="btn btn-primary btn-block" bindtap="refreshRecommend">刷新推荐</view>
+  </view>
+
+</view>

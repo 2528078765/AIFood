@@ -1,0 +1,55 @@
+<view class="container">
+
+  <view class="date-filter flex-row">
+    <picker mode="date" value="{{startDate}}" bindchange="onStartDateChange">
+      <view class="date-btn">{{startDate || '开始日期'}}</view>
+    </picker>
+    <text class="text-muted mx-16">至</text>
+    <picker mode="date" value="{{endDate}}" bindchange="onEndDateChange">
+      <view class="date-btn">{{endDate || '结束日期'}}</view>
+    </picker>
+  </view>
+
+  <view wx:if="{{loading}}" class="loading">
+    <view class="loading-text">加载中...</view>
+  </view>
+
+  <block wx:elif="{{records.length > 0}}">
+    <view class="record-card card" wx:for="{{records}}" wx:key="id">
+      <view class="flex-between mb-12">
+        <view class="text-base font-medium">
+          <text wx:if="{{item.exercise_type === 'running'}}">跑步</text>
+          <text wx:elif="{{item.exercise_type === 'swimming'}}">游泳</text>
+          <text wx:elif="{{item.exercise_type === 'weightlifting'}}">力量训练</text>
+          <text wx:elif="{{item.exercise_type === 'yoga'}}">瑜伽</text>
+          <text wx:elif="{{item.exercise_type === 'cycling'}}">骑行</text>
+          <text wx:elif="{{item.exercise_type === 'hiit'}}">HIIT</text>
+          <text wx:else>其他运动</text>
+        </view>
+        <view class="text-sm text-muted">{{item.checkin_date}}</view>
+      </view>
+      <view class="flex-row">
+        <view class="stat-pill">
+          <view class="text-lg font-bold text-primary">{{item.duration_min}}</view>
+          <view class="text-xs text-muted">分钟</view>
+        </view>
+        <view class="stat-pill ml-16" wx:if="{{item.intensity}}">
+          <view class="text-lg font-bold text-primary">{{item.intensity}}/10</view>
+          <view class="text-xs text-muted">强度</view>
+        </view>
+        <view class="stat-pill ml-16" wx:if="{{item.calories_burned}}">
+          <view class="text-lg font-bold text-primary">{{item.calories_burned}}</view>
+          <view class="text-xs text-muted">kcal</view>
+        </view>
+      </view>
+      <view class="text-sm text-muted mt-12" wx:if="{{item.notes}}">"{{item.notes}}"</view>
+    </view>
+  </block>
+
+  <view class="empty-state" wx:else>
+    <view class="empty-state-icon">🏃</view>
+    <view class="empty-state-text">暂无打卡记录</view>
+    <view class="empty-state-sub">开始运动打卡，记录你的健身之旅</view>
+  </view>
+
+</view>

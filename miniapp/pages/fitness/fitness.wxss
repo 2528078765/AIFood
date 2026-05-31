@@ -1,0 +1,422 @@
+/* ── Calendar ── */
+.calendar-card {
+  padding: 20rpx 24rpx;
+}
+
+.calendar-header {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16rpx;
+}
+
+.calendar-arrow {
+  width: 56rpx;
+  height: 56rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28rpx;
+  color: var(--text);
+  border-radius: 50%;
+  background-color: var(--bg);
+}
+
+.calendar-arrow.arrow-disabled {
+  opacity: 0.25;
+  pointer-events: none;
+}
+
+.calendar-month-title {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: var(--text);
+}
+
+/* Weekday Header */
+.calendar-weekdays {
+  display: flex;
+  flex-direction: row;
+  margin-bottom: 8rpx;
+}
+
+.weekday-cell {
+  flex: 1;
+  text-align: center;
+  font-size: 24rpx;
+  color: var(--text-muted);
+  padding: 8rpx 0;
+}
+
+/* Day Grid */
+.calendar-grid {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+
+.day-cell {
+  width: calc(100% / 7);
+  aspect-ratio: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  position: relative;
+  border-radius: 16rpx;
+  background-color: #f0f0f0;
+  border: 2rpx solid var(--bg);
+  transition: all 0.15s ease;
+}
+
+.day-empty {
+  background-color: transparent;
+}
+
+.day-num {
+  font-size: 26rpx;
+  color: var(--text);
+  font-weight: 500;
+  line-height: 1;
+}
+
+.day-dot {
+  width: 8rpx;
+  height: 8rpx;
+  border-radius: 50%;
+  background-color: #FF8C00;
+  margin-top: 4rpx;
+}
+
+/* Today */
+.day-today {
+  background-color: #fff3e0;
+  border: 3rpx solid #FF8C00;
+}
+
+.day-today .day-num {
+  color: #FF8C00;
+  font-weight: 700;
+}
+
+/* Checked-in */
+.day-checked {
+  background-color: #FF8C00;
+}
+
+.day-checked .day-num {
+  color: #fff;
+  font-weight: 700;
+}
+
+.day-checked .day-dot {
+  display: none;
+}
+
+/* Future */
+.day-future {
+  background-color: #f5f5f5;
+  pointer-events: none;
+}
+
+.day-future .day-num {
+  color: #ccc;
+}
+
+/* Past no checkin — tappable for 补卡 */
+.day-past-tappable {
+  background-color: #eee;
+}
+
+.day-past-tappable .day-num {
+  color: var(--text-muted);
+}
+
+/* Selected date indicator */
+.day-selected {
+  box-shadow: 0 0 0 4rpx rgba(255, 140, 0, 0.35);
+}
+
+/* Month stats row */
+.calendar-stats-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  margin-top: 16rpx;
+  padding-top: 16rpx;
+  border-top: 1rpx solid var(--border);
+  font-size: 24rpx;
+  color: var(--text-secondary);
+}
+
+.stats-highlight {
+  font-weight: 700;
+  color: #FF8C00;
+  font-size: 28rpx;
+}
+
+.stats-separator {
+  margin: 0 20rpx;
+  color: var(--text-muted);
+}
+
+/* ── Existing stats ── */
+.stats-grid {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  padding: 16rpx 0;
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.exercise-bar {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 16rpx 0;
+  border-bottom: 1rpx solid var(--border);
+}
+
+.exercise-bar:last-child {
+  border-bottom: none;
+}
+
+/* ── Form Styles ── */
+
+/* Selected date row */
+.selected-date-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 12rpx 0;
+  margin-bottom: 8rpx;
+}
+
+.selected-date-label {
+  font-size: 26rpx;
+  color: var(--text-secondary);
+}
+
+.selected-date-value {
+  font-size: 26rpx;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.selected-date-value.backfill {
+  color: #FF8C00;
+}
+
+/* Toggle row */
+.toggle-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16rpx 0;
+  border-top: 1rpx solid var(--border);
+  border-bottom: 1rpx solid var(--border);
+  margin-bottom: 20rpx;
+}
+
+.toggle-label {
+  font-size: 26rpx;
+  color: var(--text-secondary);
+}
+
+/* Category Grid (4 columns) */
+.category-grid {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  margin: -6rpx;
+}
+
+.category-cell {
+  width: calc((100% - 48rpx) / 4);
+  margin: 6rpx;
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--bg);
+  border-radius: var(--radius-md);
+  border: 2rpx solid transparent;
+  box-sizing: border-box;
+  transition: all 0.15s ease;
+}
+
+.category-cell:active {
+  transform: scale(0.95);
+}
+
+.category-cell.category-active {
+  background-color: #fff3e0;
+  border-color: #FF8C00;
+}
+
+.category-text {
+  font-size: 22rpx;
+  color: var(--text-secondary);
+  text-align: center;
+  white-space: pre-line;
+  line-height: 1.4;
+}
+
+.category-cell.category-active .category-text {
+  color: #FF8C00;
+  font-weight: 600;
+}
+
+/* Intensity slider */
+.intensity-slider {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.slider-value {
+  width: 64rpx;
+  height: 64rpx;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28rpx;
+  font-weight: 600;
+  margin-right: 24rpx;
+  color: #fff;
+}
+
+.slider-value.low {
+  background-color: var(--info);
+}
+
+.slider-value.high {
+  background-color: #FF8C00;
+}
+
+.intensity-slider slider {
+  flex: 1;
+}
+
+/* ── Detailed Exercise Cards ── */
+.detail-exercise-card {
+  background-color: var(--bg);
+  border-radius: var(--radius-md);
+  padding: 16rpx 20rpx;
+  margin-bottom: 12rpx;
+}
+
+.detail-ex-name {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 12rpx;
+}
+
+.detail-fields {
+  display: flex;
+  flex-direction: row;
+  margin: 0 -6rpx;
+}
+
+.detail-field {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  margin: 0 6rpx;
+}
+
+.detail-field-wide {
+  flex: 2;
+}
+
+.detail-field-placeholder {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.detail-field-label {
+  font-size: 22rpx;
+  color: var(--text-muted);
+  margin-bottom: 4rpx;
+}
+
+.detail-input {
+  height: 64rpx;
+  padding: 0 16rpx;
+  background-color: var(--bg-white);
+  border-radius: var(--radius-sm);
+  font-size: 26rpx;
+  border: 1rpx solid var(--border);
+  box-sizing: border-box;
+}
+
+/* ── Calories Display ── */
+.calories-display {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 24rpx;
+  margin-top: 24rpx;
+  background: linear-gradient(135deg, #fff3e0, #ffe0b2);
+  border-radius: var(--radius-md);
+}
+
+.calories-label {
+  font-size: 24rpx;
+  color: var(--text-muted);
+  margin-bottom: 4rpx;
+}
+
+.calories-value {
+  font-size: 48rpx;
+  font-weight: 800;
+  color: #FF8C00;
+  line-height: 1.2;
+}
+
+.calories-unit {
+  font-size: 28rpx;
+  font-weight: 500;
+  color: #FF8C00;
+}
+
+.calories-detail {
+  font-size: 22rpx;
+  color: var(--text-muted);
+  margin-top: 4rpx;
+}
+
+/* Exercise card header */
+.detail-row-header {
+  display: flex; flex-direction: row; align-items: center;
+  justify-content: space-between; margin-bottom: 12rpx;
+}
+.detail-ex-index {
+  font-size: 22rpx; color: var(--text-muted); font-weight: 600;
+}
+.detail-ex-remove {
+  font-size: 22rpx; color: var(--danger, #e74c3c);
+}
+
+.btn-sm {
+  padding: 12rpx 24rpx; font-size: 24rpx; border-radius: var(--radius-sm);
+  text-align: center; background: var(--bg); color: var(--primary);
+  border: 1rpx solid var(--border);
+}
+
+.btn-outline { background: transparent; border: 1rpx solid var(--primary); color: var(--primary); }
+
+.btn-block { width: 100%; }
+
+.btn-primary { background: var(--primary); color: #fff; border: none; }

@@ -1,0 +1,157 @@
+<view class="container">
+
+  <!-- Greeting Card -->
+  <view class="greeting-card">
+    <view class="greeting-card-bg"></view>
+    <view class="flex-between greeting-card-content">
+      <view class="flex-1">
+        <view class="greeting-title">{{greeting}}</view>
+        <view class="greeting-sub">今天也要好好吃饭和运动哦</view>
+      </view>
+      <image class="greeting-avatar" src="{{userInfo.avatar_url || defaultAvatar}}" mode="aspectFill" bindtap="goProfile" />
+    </view>
+    <view class="greeting-stats" wx:if="{{userInfo.id}}">
+      <view class="greeting-stat" wx:if="{{streakDays > 0}}">
+        <view class="greeting-stat-val">🔥 {{streakDays}}</view>
+        <view class="greeting-stat-lbl">连续打卡</view>
+      </view>
+      <view class="greeting-stat">
+        <view class="greeting-stat-val">{{userInfo.daily_calorie_target || '-'}}</view>
+        <view class="greeting-stat-lbl">每日目标 kcal</view>
+      </view>
+      <view class="greeting-stat">
+        <view class="greeting-stat-val">{{userInfo.fitness_goal === 'lose_fat' ? '减脂' : userInfo.fitness_goal === 'build_muscle' ? '增肌' : '维持'}}</view>
+        <view class="greeting-stat-lbl">当前目标</view>
+      </view>
+      <view class="greeting-stat">
+        <view class="greeting-stat-val">
+          {{bodyFatHasData ? (bodyFatPct != null ? bodyFatPct + '%' : '--') : '--'}}
+          <text class="bf-info-icon" bindtap="onBodyFatInfo" wx:if="{{bodyFatHasData}}">ⓘ</text>
+        </view>
+        <view class="greeting-stat-lbl">体脂率</view>
+      </view>
+    </view>
+    <view class="greeting-fitness" wx:if="{{userInfo.id}}">
+      <view class="gf-item">
+        <view class="gf-val">🏃 {{weekWorkouts}}</view>
+        <view class="gf-lbl">本周打卡</view>
+      </view>
+      <view class="gf-item">
+        <view class="gf-val">⏱️ {{weekMinutes}}</view>
+        <view class="gf-lbl">运动分钟</view>
+      </view>
+      <view class="gf-item">
+        <view class="gf-val">🔥 {{weekCalories}}</view>
+        <view class="gf-lbl">消耗 kcal</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- Calorie Card -->
+  <view class="calorie-card card">
+    <view class="card-header">
+      <view class="card-title card-title-accent">今日热量</view>
+      <view class="text-sm text-muted">{{todayCalories}} / {{calorieTarget}} kcal</view>
+    </view>
+    <view class="calorie-main">
+      <view class="calorie-ring-wrap">
+        <view class="calorie-ring">
+          <view class="ring-bg"></view>
+          <view class="ring-fill" style="background: conic-gradient(#07C160 {{caloriePercent * 3.6}}deg, transparent 0deg);"></view>
+          <view class="ring-center">
+            <view class="ring-value">{{caloriePercent}}%</view>
+            <view class="ring-label">已摄入</view>
+          </view>
+        </view>
+      </view>
+      <view class="macro-bars">
+        <view class="macro-row">
+          <view class="macro-dot macro-protein"></view>
+          <view class="macro-info">
+            <view class="macro-name">蛋白质</view>
+            <view class="macro-track"><view class="macro-fill protein" style="width:{{todayProtein * 4 / (calorieTarget * 0.15) * 100 > 100 ? 100 : todayProtein * 4 / (calorieTarget * 0.15) * 100}}%"></view></view>
+          </view>
+          <view class="macro-val">{{todayProtein}}g</view>
+        </view>
+        <view class="macro-row">
+          <view class="macro-dot macro-fat"></view>
+          <view class="macro-info">
+            <view class="macro-name">脂肪</view>
+            <view class="macro-track"><view class="macro-fill fat" style="width:{{todayFat * 9 / (calorieTarget * 0.25) * 100 > 100 ? 100 : todayFat * 9 / (calorieTarget * 0.25) * 100}}%"></view></view>
+          </view>
+          <view class="macro-val">{{todayFat}}g</view>
+        </view>
+        <view class="macro-row">
+          <view class="macro-dot macro-carbs"></view>
+          <view class="macro-info">
+            <view class="macro-name">碳水</view>
+            <view class="macro-track"><view class="macro-fill carbs" style="width:{{todayCarbs * 4 / (calorieTarget * 0.6) * 100 > 100 ? 100 : todayCarbs * 4 / (calorieTarget * 0.6) * 100}}%"></view></view>
+          </view>
+          <view class="macro-val">{{todayCarbs}}g</view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- Quick Actions -->
+  <view class="quick-actions">
+    <view class="qa-item" bindtap="goChat">
+      <view class="qa-icon-wrap qa-icon-chat">💬</view>
+      <view class="qa-label">AI 营养师</view>
+    </view>
+    <view class="qa-item" bindtap="goCamera">
+      <view class="qa-icon-wrap qa-icon-camera">📷</view>
+      <view class="qa-label">拍照识别</view>
+    </view>
+    <view class="qa-item" bindtap="goRecipe">
+      <view class="qa-icon-wrap qa-icon-recipe">🍽️</view>
+      <view class="qa-label">今日食谱</view>
+    </view>
+    <view class="qa-item" bindtap="goFitness">
+      <view class="qa-icon-wrap qa-icon-fitness">🏃</view>
+      <view class="qa-label">健身打卡</view>
+    </view>
+  </view>
+
+  <!-- Streak Banner -->
+  <view class="streak-banner" wx:if="{{streakDays > 0}}" bindtap="goFitness">
+    <view class="streak-icon">🔥</view>
+    <view class="flex-1 ml-12">
+      <view class="streak-title">连续打卡 <text class="streak-num">{{streakDays}}</text> 天</view>
+      <view class="streak-sub">坚持就是胜利，继续保持！</view>
+    </view>
+    <text class="streak-arrow">›</text>
+  </view>
+
+  <!-- Food Records -->
+  <view class="card">
+    <view class="card-header">
+      <view class="card-title card-title-accent">今日饮食</view>
+      <view class="text-sm text-primary" bindtap="goCamera">+ 添加</view>
+    </view>
+    <block wx:if="{{foodRecords.length > 0}}">
+      <view class="food-item" wx:for="{{foodRecords}}" wx:key="id">
+        <image class="food-thumb" src="{{item.image_url}}" mode="aspectFill" wx:if="{{item.image_url}}" />
+        <view class="food-thumb-placeholder" wx:else>🍽️</view>
+        <view class="flex-1 ml-16">
+          <view class="text-base font-semibold truncate">{{item.foods && item.foods.length > 0 ? item.foods[0].name : '未命名食物'}}</view>
+          <view class="flex-row mt-6">
+            <view class="tag tag-sm tag-green">{{item.meal_type === 'breakfast' ? '早餐' : item.meal_type === 'lunch' ? '午餐' : item.meal_type === 'dinner' ? '晚餐' : '加餐'}}</view>
+            <view class="text-xs text-muted ml-12">{{item.total_calories}} kcal</view>
+          </view>
+        </view>
+        <view class="text-sm text-primary ml-12">{{item.total_calories}}kcal</view>
+      </view>
+    </block>
+    <view class="empty-state" wx:else>
+      <view class="empty-state-icon">🍽️</view>
+      <view class="empty-state-text">今天还没有记录</view>
+      <view class="empty-state-sub">拍照识别食物，开始记录你的饮食</view>
+    </view>
+  </view>
+
+  <view class="loading" wx:if="{{loading}}">
+    <view class="loading-spinner"></view>
+  </view>
+
+</view>
